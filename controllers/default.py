@@ -8,7 +8,7 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 
-
+@auth.requires_login()
 def index():
     """
     example action using the internationalization operator T and flash
@@ -17,9 +17,50 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    response.flash = T("Hello World")
-    return dict(message=T('Welcome to web2py!'))
+    response.flash = T("Hey Mundo!! Guenta eu que hoje eu to demais porque hoje encontrei a paz e a felicidade mora aqui.")
+    return locals()
 
+# @auth.requires(auth.has_membership('admin', auth.user.id))
+@auth.requires_membership('admin')
+def cadastrar_livros():
+    form = crud.create(db.livros)
+    # form = SQLFORM(db.livros)
+
+    # if form.process().accepted:
+    #     response.flash = 'Livro cadastrado com sucesso'
+    # elif form.errors:
+    #     response.flash = 'Deu merda, resolve ai' + str(form.errors)
+    # else:
+    #     response.flash = 'Deu merda!'
+    #
+    return locals()
+
+@auth.requires_membership('admin')
+def alterar_livros():
+    response.flash = T("Alterar Livro")
+
+    id_livro = request.args(0)
+
+    # form = SQLFORM(db.livros, record=id_livro, deletable=True)
+    form = crud.update(db.livros, id_livro)
+    #
+    # if form.process().accepted:
+    #     response.flash = 'Livro alterado com sucesso'
+    # elif form.errors:
+    #     response.flash = 'Deu merda, resolve ai' + str(form.errors)
+    # else:
+    #     response.flash = 'Deu merda!'
+
+    return locals()
+
+@auth.requires_membership('admin')
+def listar_livros():
+    response.flash = T("Listar Livros")
+    # livros = db(db.livros.id).select()
+
+    livros = SQLFORM.grid(db.livros)
+
+    return locals()
 
 def user():
     """
@@ -57,5 +98,3 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
-
